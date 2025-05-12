@@ -12,15 +12,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: List image files (debug)
+        run: |
+          echo "Listing files in docs/images:"
+          ls -la docs/images
+
       - name: Generate images.json
         run: |
           cd docs/images
-          ls -1 *.jpg *.jpeg *.png 2>/dev/null | jq -R . | jq -s . > ../images.json
+          ls -1 | grep -Ei '\.(jpg|jpeg|png)$' | jq -R . | jq -s . > ../images.json
 
       - name: Commit and push images.json
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add docs/images.json
-          git commit -m "Update images.json" || echo "No changes"
+          git commit -m "Update images.json" || echo "No changes to commit"
           git push
